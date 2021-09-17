@@ -37,13 +37,40 @@ bool ndiHasErrors()
 
 bool ndiIsConnected()
 {
-	if(device == NULL || device->SerialDevice == NDI_INVALID_HANDLE)
+	if(device == NULL)
 	{
 		fprintf(stderr, "%s: NDI Polaris disconnected\n", errPrefix);
 		return false;
 	}
 	
 	return true;
+}
+
+int ndiSocketConnect(char *hostname, int port)
+{
+    numOfHandles = 0;
+    
+    device = ndiOpenNetwork(hostname, port);
+    if(device == NULL)
+    {
+        fprintf(stderr, "%s: Could not open socket communication with the given hostname\n", errPrefix);
+        return -1;
+    }
+    
+    // Reset NDI device
+    // reply = ndiRESET(device);
+    // if(ndiHasErrors()) return -2;
+    
+    // Initialize NDI device
+    reply = ndiINIT(device);
+    if(ndiHasErrors()) return -3;
+    
+    return 0;
+}
+
+void ndiSetSocketTimeout()
+{
+    ndiTimeoutSocket(device, 500);
 }
 
 int ndiConnect()
@@ -79,7 +106,7 @@ int ndiConnect()
 		fprintf(stderr, "%s: No successful connection to NDI device was made\n", errPrefix);
 		return -1;
 	}
-	
+    
 	// Reset NDI device
 	reply = ndiRESET(device);
 	if(ndiHasErrors()) return -2;
@@ -99,6 +126,10 @@ void ndiDisconnect()
 		{
 			ndiCloseSerial(device);
 		}
+        else
+        {
+            ndiCloseNetwork(device);
+        }
 		device = NULL;
 	}
 }

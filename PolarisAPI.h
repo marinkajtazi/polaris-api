@@ -26,8 +26,16 @@ extern "C" {
 	 */
 	bool ndiIsConnected(void);
 	
+    /**
+     * Method that tries to connect to NDI Polaris device through a socket communication. If it's already connected,
+     * return with no error message.
+     *
+     * @return error code if error was produced, 0 otherwise
+     */
+    int ndiSocketConnect(char *hostname, int port);
+
 	/**
-	 * Method that tries to connect to NDI Polaris device. If it's already connected,
+	 * Method that tries to connect to NDI Polaris device through serial communication. If it's already connected,
 	 * return with no error message. 
 	 *
 	 * @return error code if error was produced, 0 otherwise
